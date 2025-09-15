@@ -4,14 +4,51 @@
     <meta charset = "utf8">
     <title>Alexander Toles</title>
     <style>
-        .btn{
-            font-size: 16;
+        .headerRibbon{
+            position: sticky;
+            top:0px;
+            padding: 12px 40px;
+            font-size: 30px;
+            cursor: pointer;
+            background-color: rgba(91, 91, 91, 0.5);
+            color: white;
         }
+        .header{
+            border: none;
+            border-radius: 5px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #2D2D40;
+            color: white;
+            position: relative;
+            
+        }
+        .btn {
+        border: none;
+        border-radius: 5px;
+        padding: 12px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #2D2D40;
+        color: white;
+        position: relative;
+        }
+        .btn:hover{
+            background-color: #20202E;
+        }
+        .txt{
+            font-size: 50px;
+        }
+
     </style>
 </head>
 <body>
-    <H1> Alexander Toles </H1>
-    <button class = "btn">Resume</button>
+    <div class="headerRibbon" id="pageHeader">
+        <button class="header"> Alexander Toles </button>
+        <button class = "btn">Resume</button>
+        <button class = "btn">Work Examples</button>
+        </div>
     </script>
 </body>
 <html>
