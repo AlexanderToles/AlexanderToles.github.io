@@ -3,8 +3,142 @@
     <head>
         <meta charset = "utf-8">
         <title>CS Work Examples</title>
+        <style>
+        button{
+            font-size: 15px;
+            text-align: left;
+            font-family: Arial;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            background-color: #333533;
+            position: relative;
+            width: 100px;
+        }
+        h1.heading{
+            font-size:75px;
+            text-align: center;
+            font-family: Arial;
+        }
+        h2.subheading{
+            font-size: 50px;
+            text-align: left;
+            font-family: Arial;
+        }
+        .selection{
+            font-size: 15px;
+            text-align: left;
+            font-family: Arial;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            background-color: #333533;
+            position: relative;
+            width: 100px;
+        }
+        .selection:hover{
+            background-color: #202020;
+        }
+        button.gen{
+            background-color: rgb(5, 190, 5);
+        }
+        button.gen:hover{
+            background-color:rgb(4, 147, 4);
+        }
+        .headerRibbon{
+            position: sticky;
+            top:0px;
+            padding: 12px 40px;
+            font-size: 30px;
+            cursor: pointer;
+            background-color: rgba(91, 91, 91, 0.5);
+            color: white;
+        }
+        .btn {
+            border: none;
+            border-radius: 5px;
+            padding: 12px 20px;
+            font-size: 16px;
+            text-decoration: none;
+            font-family: Arial;
+            background-color: #333533;
+            color: white;
+            position: relative;
+        }
+        .btn:hover{
+            background-color: #202020;
+        }
+        .txt{
+            font-size: 15px;
+            font-family: Arial;
+            color: #202020;
+        }
+        </style>
     </head>
     <body>
-        <p>test</p>
+        <div class="headerRibbon" id="pageHeader">
+        <a class = "btn" href = "index.html">Home</a>
+        <a class = "btn" href = "work-examples.html">JS Examples</a>
+        </div>
+        <h1 class="heading">JavaScript Coding Examples</h1>
+        <h2 class="subheading"> Sorting Algorithms <h2>
+        <div>
+            <p class = "selection" onclick="insertionSlider.toggle()">Insertion Sort</p>
+            <div id="insertionSelect" class="txt">
+                <p>Select Sorting Range</p>
+                <input type="range" min="1" max="1000" value="50" class="slider">
+                <p>Max Number: </p>
+                <button class = "gen">Generate</p> </button>
+            </div>
+
+            <p class = "selection" onclick="mergeSlider.toggle()">Merge Sort</p>
+            <div id="mergeSelect" class="txt">
+                <p>Select Sorting Range</p>
+                <input type="range" min="1" max="1000" value="50" class="slider">
+                <p>Max Number: </p>
+                
+            </div>
+
+            <p class = "selection" onclick="quickSlider.toggle()">Quick Sort</p>
+            <div id="quickSelect" class="txt">
+                <p>Select Sorting Range</p>
+                <input type="range" min="1" max="1000" value="50" class="slider">
+                <p>Max Number: </p>
+            </div>
+            
+            <p class = "selection" onclick="heapSlider.toggle()">Heap Sort</p>
+            <div id="heapSelect" class="txt">
+                <p>Select Sorting Range</p>
+                <input type="range" min="1" max="1000" value="50" class="slider">
+                <p>Max Number: </p>
+            </div>
+            
+        </div>
+        <script>
+            class slider{
+                constructor(elementId){
+                    this.slider = document.getElementById(elementId);
+                    this.visible = true;
+                    this.toggle();
+                }
+                toggle(){
+                    if(this.visible){
+                        this.slider.hidden = true;
+                        this.visible = false;
+                    }
+                    else{
+                        this.slider.hidden = false;
+                        this.visible = true;
+                    }
+                }
+
+            }
+            insertionSlider = new slider("insertionSelect");
+            mergeSlider = new slider("mergeSelect");
+            quickSlider = new slider("quickSelect");
+            heapSlider = new slider("heapSelect");
+        </script>
     </body>
 </html>
