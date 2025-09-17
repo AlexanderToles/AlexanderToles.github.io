@@ -16,6 +16,16 @@
             position: relative;
             width: 100px;
         }
+        .sortContainer{
+            display:flex;
+            justify-content: flex-start; /* aligns items left to right */
+            align-items: flex-start; /* aligns items vertically at top */
+            gap: 20px; /* space between sortContainer and canvas */
+        }
+        .sortControlContainer{
+            width: 25vw;
+            background-color: rgba(5, 190, 5,.5);
+        }
         h1.heading{
             font-size:75px;
             text-align: center;
@@ -84,61 +94,154 @@
         </div>
         <h1 class="heading">JavaScript Coding Examples</h1>
         <h2 class="subheading"> Sorting Algorithms <h2>
-        <div>
-            <p class = "selection" onclick="insertionSlider.toggle()">Insertion Sort</p>
-            <div id="insertionSelect" class="txt">
-                <p>Select Sorting Range</p>
-                <input type="range" min="1" max="1000" value="50" class="slider">
-                <p>Max Number: </p>
-                <button class = "gen">Generate</p> </button>
+        <div class="sortContainer">
+            <div class = "sortControlContainer">
+                <p class = "selection" onclick="bubbleSort()">Bubble Sort</p>
             </div>
-
-            <p class = "selection" onclick="mergeSlider.toggle()">Merge Sort</p>
-            <div id="mergeSelect" class="txt">
-                <p>Select Sorting Range</p>
-                <input type="range" min="1" max="1000" value="50" class="slider">
-                <p>Max Number: </p>
-                
+            <canvas width="500" height="500" ></canvas>
+            <div>
+            <input type="range" min="1" max="500" value="50" class="slider" id="rangeSlider">
+            <p>Numbers to sort:<span id="numbersToSort"></span></p>
+            <button class = "gen" onclick="generateFromSlider()">Generate</button>
             </div>
-
-            <p class = "selection" onclick="quickSlider.toggle()">Quick Sort</p>
-            <div id="quickSelect" class="txt">
-                <p>Select Sorting Range</p>
-                <input type="range" min="1" max="1000" value="50" class="slider">
-                <p>Max Number: </p>
-            </div>
-            
-            <p class = "selection" onclick="heapSlider.toggle()">Heap Sort</p>
-            <div id="heapSelect" class="txt">
-                <p>Select Sorting Range</p>
-                <input type="range" min="1" max="1000" value="50" class="slider">
-                <p>Max Number: </p>
-            </div>
-            
         </div>
+        
         <script>
-            class slider{
-                constructor(elementId){
-                    this.slider = document.getElementById(elementId);
-                    this.visible = true;
-                    this.toggle();
-                }
-                toggle(){
-                    if(this.visible){
-                        this.slider.hidden = true;
-                        this.visible = false;
-                    }
-                    else{
-                        this.slider.hidden = false;
-                        this.visible = true;
-                    }
-                }
+            
+            var rSlider = document.getElementById('rangeSlider');
+            var rSliderOutput = document.getElementById('numbersToSort');
+            var rSliderVal = 0;
 
+            function valueCorrect(val){
+                while(500%val != 0){
+                    val++;
+                }
+                return val;
             }
-            insertionSlider = new slider("insertionSelect");
-            mergeSlider = new slider("mergeSelect");
-            quickSlider = new slider("quickSelect");
-            heapSlider = new slider("heapSelect");
+
+            rSlider.oninput = function(){
+                rSliderVal = valueCorrect(this.value);
+                rSliderOutput.innerHTML = rSliderVal;
+            }
+
+            
+
+            
+            
+            const algorithmDisplay = {
+                canvas : document.querySelector("canvas"),
+                context : document.querySelector("canvas").getContext("2d"),
+                cellW : 0,
+                cellH : 0,
+                numElements: 0,
+                arr: [],
+                generate: function(num){
+                    while(this.arr.length!=0){
+                        this.arr.pop();
+                    }
+                    this.numElements = num;
+                    this.cellW = Math.floor(500/num);
+                    this.cellH = Math.floor(500/num);
+                    this.context.fillStyle = "black";
+                    this.context.fillRect(0,0,500,500);
+
+                    
+
+                    let tempArr = []; //create arrays, randomly pull values from temp, put into unsorted array
+                    let unsortedArr = [];
+
+                    for(let i = 1; i <= num; i++){ //populate temp array with number of vaules
+                        tempArr.push(i);
+                    }
+                    
+                    while(tempArr.length > 0){ 
+                        randIdx = Math.floor(Math.random()*tempArr.length); //get random index
+                        unsortedArr.push(tempArr[randIdx]); //add the value from that index into unsorted array
+                        tempArr.splice(randIdx,1); //remove from temp index
+                    }
+                    //console.log(unsortedArr);
+                    //console.log("this.cellW",this.cellW);
+                    for(let i = 0; i < unsortedArr.length;i++){
+                        this.arr.splice(i,0,unsortedArr[i]);
+                    }
+                    for(let i = 0; i < this.arr.length;i++){
+                        this.draw(i);
+                    }
+                    console.log(this.numElements,this.cellH);
+                },
+                highlight: function(idx){
+                    this.context.fillStyle = "green";
+                    this.context.fillRect(this.cellW*idx,500-(this.cellH*this.arr[idx]),this.cellW,this.cellH*this.arr[idx]);
+                },
+                draw: function(idx){
+                    this.context.fillStyle = "black";
+                    this.context.fillRect(this.cellW*idx,0,this.cellW,500);
+                    this.context.fillStyle = "yellow";
+                    this.context.fillRect(this.cellW*idx,500-(this.cellH*this.arr[idx]),this.cellW,this.cellH*this.arr[idx]);
+                },
+                swap: function(a,b){
+                    let tempA = this.arr[a];
+                    this.arr.splice(a,1,this.arr[b]);
+                    this.arr.splice(b,1,tempA);
+                    //console.log(this.arr[a],this.arr[b])
+                    this.draw(a);
+                    this.draw(b);
+                },
+                bubble: function(){
+                    for(let i = 0;i < this.arr.length;i++){
+                        for(let j = 0; j < this.arr.length-1;j++){
+                            if(j+1 > this.arr.length){
+                                console.log("ERROR INDEX OUT OF RANGE");
+                            }
+                            if(this.arr[j] > this.arr[j+1]){
+                                this.swap(j,j+1);
+                            }
+                        }
+                    }
+                        
+                    
+                },
+                isSorted: function(){
+                    let i = 0;
+                    while(this.arr[i]<this.arr[i+1]){
+                        i++;
+                    }
+                    if (i == this.arr.length){
+                        return true;
+                    }
+                    else{ return false;}
+                },
+                highlightThrough: function() {
+                    let i = 0;
+                    let lastTime = Date.now(); // Use Date.now() for accurate timing
+
+                    const interval = setInterval(() => {
+                        let now = Date.now(); // Get current time in ms
+
+                        // Check if 500ms has passed
+                        if (now - lastTime > 50) { 
+                            this.highlight(i);
+                            lastTime = now; // Update the last time
+                            i++;
+                        }
+                        
+                        // Stop when all elements are highlighted
+                        if (i >= this.arr.length) {
+                            clearInterval(interval); // Clear the interval when done
+                        }
+                    }, 5); // Check every 50 ms
+                }
+            }
+
+            algorithmDisplay.generate(0);
+            function bubbleSort(){
+                algorithmDisplay.bubble();
+            }
+            function generateFromSlider(){
+                algorithmDisplay.generate(rSliderVal);
+            }
+
+            
         </script>
     </body>
 </html>
