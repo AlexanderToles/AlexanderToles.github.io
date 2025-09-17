@@ -97,10 +97,11 @@
         <div class="sortContainer">
             <div class = "sortControlContainer">
                 <p class = "selection" onclick="bubbleSort()">Bubble Sort</p>
+                <p class = "selection" onclick="mergeSort()">Merge Sort</p>
             </div>
-            <canvas width="500" height="500" ></canvas>
+            <canvas width="600" height="600" ></canvas>
             <div>
-            <input type="range" min="1" max="500" value="50" class="slider" id="rangeSlider">
+            <input type="range" min="1" max="100" value="50" class="slider" id="rangeSlider">
             <p>Numbers to sort:<span id="numbersToSort"></span></p>
             <button class = "gen" onclick="generateFromSlider()">Generate</button>
             </div>
@@ -111,9 +112,14 @@
             var rSlider = document.getElementById('rangeSlider');
             var rSliderOutput = document.getElementById('numbersToSort');
             var rSliderVal = 0;
+            var prev = 0;
+
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
 
             function valueCorrect(val){
-                while(500%val != 0){
+                while(600%val != 0){
                     val++;
                 }
                 return val;
@@ -134,16 +140,19 @@
                 cellW : 0,
                 cellH : 0,
                 numElements: 0,
+                running: 0,
+                finished: 0,
                 arr: [],
                 generate: function(num){
+                    this.finished = 0;
                     while(this.arr.length!=0){
                         this.arr.pop();
                     }
                     this.numElements = num;
-                    this.cellW = Math.floor(500/num);
-                    this.cellH = Math.floor(500/num);
+                    this.cellW = Math.floor(600/num);
+                    this.cellH = Math.floor(600/num);
                     this.context.fillStyle = "black";
-                    this.context.fillRect(0,0,500,500);
+                    this.context.fillRect(0,0,600,600);
 
                     
 
@@ -165,80 +174,115 @@
                         this.arr.splice(i,0,unsortedArr[i]);
                     }
                     for(let i = 0; i < this.arr.length;i++){
-                        this.draw(i);
+                        this.draw(i,"#FFFF00");
                     }
                     console.log(this.numElements,this.cellH);
                 },
-                highlight: function(idx){
-                    this.context.fillStyle = "green";
-                    this.context.fillRect(this.cellW*idx,500-(this.cellH*this.arr[idx]),this.cellW,this.cellH*this.arr[idx]);
-                },
-                draw: function(idx){
+                draw: function(idx,color){
                     this.context.fillStyle = "black";
-                    this.context.fillRect(this.cellW*idx,0,this.cellW,500);
-                    this.context.fillStyle = "yellow";
-                    this.context.fillRect(this.cellW*idx,500-(this.cellH*this.arr[idx]),this.cellW,this.cellH*this.arr[idx]);
+                    this.context.fillRect(this.cellW*idx,0,this.cellW,600);
+                    this.context.fillStyle = color;
+                    this.context.fillRect(this.cellW*idx,600-(this.cellH*this.arr[idx]),this.cellW,this.cellH*this.arr[idx]);
                 },
                 swap: function(a,b){
                     let tempA = this.arr[a];
                     this.arr.splice(a,1,this.arr[b]);
                     this.arr.splice(b,1,tempA);
                     //console.log(this.arr[a],this.arr[b])
-                    this.draw(a);
-                    this.draw(b);
+                    this.draw(a,"#FFFF00");
+                    this.draw(b,"#CCCC00");
                 },
-                bubble: function(){
+                bubble: async function(){
+                    this.running = 1;
                     for(let i = 0;i < this.arr.length;i++){
+                        if(this.isSorted()){
+                                console.log("sorted");
+                                this.highlightThrough();
+                                this.running = 0;
+                                this.finished = 1;
+                                break;
+                            }
                         for(let j = 0; j < this.arr.length-1;j++){
                             if(j+1 > this.arr.length){
                                 console.log("ERROR INDEX OUT OF RANGE");
                             }
                             if(this.arr[j] > this.arr[j+1]){
                                 this.swap(j,j+1);
+                                await sleep(50);
                             }
+                            
                         }
                     }
-                        
-                    
+                },
+                merge: function(L1,L2){
+                    let mergedList = [];
+                    while(L1.length > 0 && L2.length > 0){
+                        if(L1[0] < L2[0]){
+                            mergedList.push(L1[0]);
+                            L1.splice(0,1);
+                        }else{
+                            mergedList.push(L2[0]);
+                            L2.splice(0,1);
+                        }
+                    if(L1.length ==0){
+                        mergedList.push(L2[0]);
+                    } else{
+                        mergedList.push(L1[0]);
+                    }
+                    }
+                    return mergedList;
+                },
+                recMerge: function(){
+                    n = this.arr.length;
+                    if (n == 1){
+                        return this.arr;
+                    }
+                    let L1 = []
+                    let L2 = []
+                    for(let i = 0; i<(Math.floor(n/2));i++){
+                        L1.push(this.arr[i])
+                    }
+                    for(let i = (Math.floor(n/2)) ; i<n;i++){
+                        L2.push(this.arr[i])
+                    }
+                    return this.merge(this.rec_merge(L1),this.rec_merge(L2))
+                },
+                highlightThrough: async function(){
+                    for(let i=0; i < this.arr.length;i++){
+                        this.draw(i,"#90D5FF");
+                        await sleep(50);
+                    }
                 },
                 isSorted: function(){
                     let i = 0;
                     while(this.arr[i]<this.arr[i+1]){
                         i++;
                     }
-                    if (i == this.arr.length){
+                    if (i == this.arr.length-1){
                         return true;
                     }
-                    else{ return false;}
+                    else{return false;}
                 },
-                highlightThrough: function() {
-                    let i = 0;
-                    let lastTime = Date.now(); // Use Date.now() for accurate timing
-
-                    const interval = setInterval(() => {
-                        let now = Date.now(); // Get current time in ms
-
-                        // Check if 500ms has passed
-                        if (now - lastTime > 50) { 
-                            this.highlight(i);
-                            lastTime = now; // Update the last time
-                            i++;
-                        }
-                        
-                        // Stop when all elements are highlighted
-                        if (i >= this.arr.length) {
-                            clearInterval(interval); // Clear the interval when done
-                        }
-                    }, 5); // Check every 50 ms
-                }
             }
 
             algorithmDisplay.generate(0);
             function bubbleSort(){
-                algorithmDisplay.bubble();
+                if(!algorithmDisplay.running && !algorithmDisplay.finished){
+                    algorithmDisplay.bubble();
+                }
+                
+            }
+            function mergeSort(){
+                if(!algorithmDisplay.running && !algorithmDisplay.finished){
+                    algorithmDisplay.merge();
+                }
+                
             }
             function generateFromSlider(){
-                algorithmDisplay.generate(rSliderVal);
+                if(!algorithmDisplay.running){
+                    algorithmDisplay.generate(rSliderVal);
+                }
+                
             }
 
             
